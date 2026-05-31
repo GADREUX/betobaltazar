@@ -48,11 +48,12 @@ export default async function HomePage() {
                 <div className="absolute -bottom-2 -right-2 w-full h-full bg-terra/10 rounded-3xl" />
                 <div className="relative w-full h-full rounded-3xl overflow-hidden shadow-lift">
                   <Image
-                    src="https://imonuvem.com.br/imovel/95/5004/casa-venda-centro-smp1328930224.jpg"
+                    src="https://imonuvem.com.br/imovel/95/5004/casa-venda-centro-cm1328930224.jpg"
                     alt="Casa Térrea de Alto Padrão no Centro — Capão Bonito"
                     fill
                     className="object-cover"
-                    sizes="(max-width: 1024px) 0px, 400px"
+                    sizes="500px"
+                    unoptimized
                     priority
                   />
                   <div className="absolute bottom-5 left-5 right-5">
