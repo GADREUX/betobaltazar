@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
-import { ArrowLeft, Save, Loader2 } from 'lucide-react';
+import { ArrowLeft, Save, Loader2, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import PhotoUploader from '@/components/photo-uploader';
 
@@ -31,6 +31,17 @@ export default function PropertyForm({ initial, owners }: { initial?: any; owner
   const u = (k: string, v: any) => setForm(p => ({ ...p, [k]: v }));
   const toggleFeature = (f: string) => setForm(p => ({ ...p, features: p.features.includes(f) ? p.features.filter((x: string) => x !== f) : [...p.features, f] }));
 
+  async function onDelete() {
+    if (!initial) return;
+    if (!confirm(`Excluir "${initial.title}"?\nEsta ação não pode ser desfeita.`)) return;
+    const supabase = createClient();
+    const { error } = await supabase.from('properties').delete().eq('id', initial.id);
+    if (error) { toast.error('Erro ao excluir'); return; }
+    toast.success('Imóvel excluído');
+    router.push('/admin/imoveis');
+    router.refresh();
+  }
+
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!form.title.trim()) { toast.error('Título obrigatório'); return; }
@@ -53,7 +64,14 @@ export default function PropertyForm({ initial, owners }: { initial?: any; owner
     <form onSubmit={onSubmit} className="space-y-5 max-w-4xl">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <Link href="/admin/imoveis" className="text-sm text-ink-soft hover:text-terra flex items-center gap-1.5"><ArrowLeft size={14} /> Voltar</Link>
-        <button type="submit" disabled={loading} className="btn-primary">{loading ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}{isEdit ? 'Salvar' : 'Cadastrar'}</button>
+        <div className="flex gap-2">
+          {isEdit && (
+            <button type="button" onClick={onDelete} className="btn-outline text-red hover:bg-red/5 hover:border-red">
+              <Trash2 size={14} /> Excluir imóvel
+            </button>
+          )}
+          <button type="submit" disabled={loading} className="btn-primary">{loading ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}{isEdit ? 'Salvar' : 'Cadastrar'}</button>
+        </div>
       </div>
 
       {/* Identificação */}
