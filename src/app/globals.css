@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { scroll-behavior: smooth; }
+  body { @apply bg-paper text-ink font-sans antialiased; text-rendering: optimizeLegibility; }
+  ::selection { @apply bg-terra/20 text-ink; }
+}
+
+@layer components {
+  .btn { @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg font-medium text-sm transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed; }
+  .btn-primary { @apply btn bg-terra text-white hover:bg-terra-dark shadow-soft hover:shadow-card; }
+  .btn-secondary { @apply btn bg-ink text-paper hover:bg-ink-soft shadow-soft; }
+  .btn-outline { @apply btn bg-transparent border border-border text-ink hover:bg-cream; }
+  .btn-ghost { @apply btn bg-transparent text-ink-soft hover:bg-cream; }
+  .btn-sm { @apply px-3 py-1.5 text-xs; }
+  .btn-lg { @apply px-7 py-3.5 text-base; }
+  .field-label { @apply block text-xs font-medium text-ink-soft mb-1.5 tracking-wide; }
+  .field-input { @apply w-full px-4 py-2.5 bg-white border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-terra/20 focus:border-terra transition-all duration-150 placeholder:text-gray-400; }
+  .field-textarea { @apply field-input min-h-[90px] resize-y; }
+  .card-base { @apply bg-white border border-border rounded-2xl shadow-soft; }
+  .card-padded { @apply card-base p-6; }
+  .badge { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium; }
+}
+
+@layer utilities {
+  .underline-terra { background-image: linear-gradient(transparent 70%, rgba(214,43,43,0.25) 70%); background-size: 100% 100%; }
+  .scrollbar-thin::-webkit-scrollbar { width: 6px; height: 6px; }
+  .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+  .scrollbar-thin::-webkit-scrollbar-thumb { background: #E0E0E0; border-radius: 3px; }
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: #D62B2B; }
+}
