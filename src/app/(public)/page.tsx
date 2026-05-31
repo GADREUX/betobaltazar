@@ -43,18 +43,34 @@ export default async function HomePage() {
               </div>
             </div>
             <div className="hidden lg:flex items-center justify-center">
-              <div className="relative w-full max-w-md aspect-square">
-                <div className="absolute inset-0 bg-terra/10 rounded-3xl rotate-3" />
-                <div className="absolute inset-0 bg-cream border border-border rounded-3xl -rotate-1 flex items-center justify-center">
-                  <div className="text-center p-8">
-                    <div className="w-24 h-24 bg-terra rounded-2xl flex items-center justify-center mx-auto mb-6">
-                      <svg viewBox="0 0 40 40" className="w-14 h-14 text-white" fill="currentColor">
-                        <path d="M4 22 L20 6 L36 22 L36 36 L26 36 L26 26 L14 26 L14 36 L4 36 Z" />
-                      </svg>
+              <div className="relative w-full max-w-md aspect-[4/5]">
+                {/* Sombra decorativa */}
+                <div className="absolute -bottom-4 -right-4 w-full h-full bg-terra/20 rounded-3xl" />
+                <div className="absolute -bottom-2 -right-2 w-full h-full bg-terra/10 rounded-3xl" />
+                {/* Foto */}
+                <div className="relative w-full h-full rounded-3xl overflow-hidden shadow-lift">
+                  <Image
+                    src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&q=80"
+                    alt="Casa à venda em Capão Bonito"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 1024px) 0px, 400px"
+                    priority
+                  />
+                  {/* Badge sobre a foto */}
+                  <div className="absolute bottom-5 left-5 right-5">
+                    <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-4 shadow-lift">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-xs text-ink-soft/60 mb-0.5">Imóvel em destaque</p>
+                          <p className="font-display font-bold text-ink">Capão Bonito/SP</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-xs text-ink-soft/60 mb-0.5">A partir de</p>
+                          <p className="font-display font-bold text-terra">R$ 88.000</p>
+                        </div>
+                      </div>
                     </div>
-                    <div className="font-display text-2xl font-bold text-ink mb-1">Beto Baltazar</div>
-                    <div className="text-sm text-ink-soft/70">Corretor de Imóveis</div>
-                    <div className="text-xs text-terra font-semibold mt-2 tracking-wider">CRECI 318284-F</div>
                   </div>
                 </div>
               </div>
@@ -62,6 +78,26 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* DESTAQUES — antes dos valores */}
+      {featured && featured.length > 0 && (
+        <section className="py-20 bg-paper">
+          <div className="max-w-7xl mx-auto px-6 md:px-8">
+            <div className="flex items-end justify-between mb-10 flex-wrap gap-4">
+              <div>
+                <p className="text-xs tracking-[4px] text-terra uppercase mb-2 font-semibold">Destaques</p>
+                <h2 className="font-display text-4xl font-bold text-ink">Imóveis selecionados.</h2>
+              </div>
+              <Link href="/imoveis" className="text-sm font-medium text-terra hover:underline flex items-center gap-1 group">
+                Ver todos <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
+              </Link>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {featured.map((p: any) => <PropertyCard key={p.id} property={p} />)}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* VALORES */}
       <section className="py-20 bg-cream/40 border-y border-border">
@@ -85,26 +121,6 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
-
-      {/* DESTAQUES */}
-      {featured && featured.length > 0 && (
-        <section className="py-20 bg-paper">
-          <div className="max-w-7xl mx-auto px-6 md:px-8">
-            <div className="flex items-end justify-between mb-10 flex-wrap gap-4">
-              <div>
-                <p className="text-xs tracking-[4px] text-terra uppercase mb-2 font-semibold">Destaques</p>
-                <h2 className="font-display text-4xl font-bold text-ink">Imóveis selecionados.</h2>
-              </div>
-              <Link href="/imoveis" className="text-sm font-medium text-terra hover:underline flex items-center gap-1 group">
-                Ver todos <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
-              </Link>
-            </div>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {featured.map((p: any) => <PropertyCard key={p.id} property={p} />)}
-            </div>
-          </div>
-        </section>
-      )}
 
       {/* CTA */}
       <section className="py-20 bg-ink text-white">
