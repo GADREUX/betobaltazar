@@ -44,30 +44,27 @@ export default async function HomePage() {
             </div>
             <div className="hidden lg:flex items-center justify-center">
               <div className="relative w-full max-w-md aspect-[4/5]">
-                {/* Sombra decorativa */}
                 <div className="absolute -bottom-4 -right-4 w-full h-full bg-terra/20 rounded-3xl" />
                 <div className="absolute -bottom-2 -right-2 w-full h-full bg-terra/10 rounded-3xl" />
-                {/* Foto */}
                 <div className="relative w-full h-full rounded-3xl overflow-hidden shadow-lift">
                   <Image
-                    src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&q=80"
-                    alt="Casa à venda em Capão Bonito"
+                    src="https://imonuvem.com.br/imovel/95/5004/casa-venda-centro-smp1328930224.jpg"
+                    alt="Casa Térrea de Alto Padrão no Centro — Capão Bonito"
                     fill
                     className="object-cover"
                     sizes="(max-width: 1024px) 0px, 400px"
                     priority
                   />
-                  {/* Badge sobre a foto */}
                   <div className="absolute bottom-5 left-5 right-5">
                     <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-4 shadow-lift">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-xs text-ink-soft/60 mb-0.5">Imóvel em destaque</p>
-                          <p className="font-display font-bold text-ink">Capão Bonito/SP</p>
+                          <p className="text-xs text-ink-soft/60 mb-0.5">Destaque · Centro</p>
+                          <p className="font-display font-bold text-ink text-sm">Casa Térrea de Alto Padrão</p>
                         </div>
                         <div className="text-right">
-                          <p className="text-xs text-ink-soft/60 mb-0.5">A partir de</p>
-                          <p className="font-display font-bold text-terra">R$ 88.000</p>
+                          <p className="text-xs text-ink-soft/60 mb-0.5">Venda</p>
+                          <p className="font-display font-bold text-terra">R$ 990.000</p>
                         </div>
                       </div>
                     </div>
