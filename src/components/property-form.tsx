@@ -3,8 +3,9 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
-import { ArrowLeft, Save, Loader2, Trash2 } from 'lucide-react';
+import { ArrowLeft, Save, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import PhotoUploader from '@/components/photo-uploader';
 
 const TYPES = ['Casa','Apartamento','Terreno','Comercial','Rural','Cobertura','Kitnet','Sobrado'];
 const PURPOSES = ['Venda','Locação','Venda e Locação'];
@@ -107,11 +108,10 @@ export default function PropertyForm({ initial, owners }: { initial?: any; owner
         <div><label className="field-label">Características</label><div className="flex flex-wrap gap-2 mt-1">{FEATURES.map(f => <button key={f} type="button" onClick={() => toggleFeature(f)} className={`px-3 py-1.5 rounded-full text-xs font-medium border transition ${form.features.includes(f) ? 'bg-terra text-white border-terra' : 'bg-white text-ink-soft border-border hover:border-terra/40'}`}>{f}</button>)}</div></div>
       </div>
 
-      {/* Fotos URL */}
-      <div className="card-base p-6 space-y-3">
-        <h3 className="font-display text-lg font-semibold">URLs das fotos</h3>
-        <p className="text-xs text-ink-soft/60">Cole as URLs das fotos (uma por linha). Use o Supabase Storage para hospedar as imagens.</p>
-        <textarea className="field-textarea font-mono text-xs" rows={5} value={form.photos.join('\n')} onChange={e => u('photos', e.target.value.split('\n').filter(Boolean))} placeholder="https://...supabase.co/storage/..." />
+      {/* Fotos */}
+      <div className="card-base p-6 space-y-4">
+        <h3 className="font-display text-lg font-semibold">Fotos do imóvel</h3>
+        <PhotoUploader photos={form.photos} onChange={(photos) => u('photos', photos)} />
       </div>
 
       {/* Proprietário + Publicação */}
