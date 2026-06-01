@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Phone, Mail, MapPin, MessageCircle } from 'lucide-react';
 import GestorButton from '@/components/gestor-button';
 
@@ -18,17 +19,16 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
       </div>
 
       <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-border shadow-soft">
-        <div className="max-w-7xl mx-auto px-6 md:px-8 h-[68px] flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-terra rounded-lg flex items-center justify-center">
-              <svg viewBox="0 0 40 40" className="w-6 h-6 text-white" fill="currentColor">
-                <path d="M8 20 L20 8 L32 20 L32 32 L24 32 L24 24 L16 24 L16 32 L8 32 Z" />
-              </svg>
-            </div>
-            <div className="flex flex-col leading-none">
-              <span className="font-display text-xl font-bold tracking-tight text-ink">Beto Baltazar</span>
-              <span className="text-[10px] tracking-[2px] text-terra uppercase font-semibold mt-0.5">Corretor de Imóveis</span>
-            </div>
+        <div className="max-w-7xl mx-auto px-6 md:px-8 h-[88px] flex items-center justify-between">
+          <Link href="/" className="flex items-center">
+            <Image
+              src="/logo-clean.png"
+              alt="Beto Baltazar — Corretor de Imóveis"
+              width={640}
+              height={200}
+              className="h-16 md:h-[72px] w-auto object-contain"
+              priority
+            />
           </Link>
 
           <nav className="hidden md:flex items-center gap-8">
@@ -59,8 +59,15 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
         <div className="max-w-7xl mx-auto px-8 py-12">
           <div className="grid md:grid-cols-3 gap-10 mb-10">
             <div>
-              <div className="font-display text-2xl font-bold text-white mb-1">Beto Baltazar</div>
-              <div className="text-[10px] tracking-[3px] text-terra uppercase mb-3 font-semibold">Corretor de Imóveis</div>
+              <div className="bg-white rounded-xl p-4 inline-block mb-4">
+                <Image
+                  src="/logo-clean.png"
+                  alt="Beto Baltazar — Corretor de Imóveis"
+                  width={640}
+                  height={200}
+                  className="h-16 w-auto object-contain"
+                />
+              </div>
               <p className="text-sm text-white/60 leading-relaxed">Compra, venda e locação de imóveis em Capão Bonito com transparência e dedicação.</p>
             </div>
             <div>

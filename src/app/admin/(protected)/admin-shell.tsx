@@ -20,7 +20,7 @@ export default function AdminShell({ children, userEmail }: { children: React.Re
 
   async function logout() {
     const supabase = createClient();
-    await supabase.auth.signOut();
+    await (supabase.auth as any).signOut();
     toast.success('Até logo!');
     router.push('/admin/login');
     router.refresh();

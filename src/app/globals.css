@@ -32,6 +32,65 @@
   }
 }
 
+/* Glass card with animated red blob — "Por que nos escolher" section */
+.blob-card {
+  position: relative;
+  width: 100%;
+  max-width: 320px;
+  height: 320px;
+  border-radius: 18px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 20px 20px 60px #d4d4d4, -20px -20px 60px #ffffff;
+  margin: 0 auto;
+  isolation: isolate;
+}
+
+.blob-card .blob-bg {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  right: 5px;
+  bottom: 5px;
+  z-index: 2;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-radius: 14px;
+  overflow: hidden;
+  outline: 2px solid rgba(255, 255, 255, 0.9);
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.blob-card .blob {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 50%;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background-color: #CC0D1A;
+  opacity: 1;
+  filter: blur(20px);
+  animation: blob-bounce 8s infinite ease;
+}
+
+@keyframes blob-bounce {
+  0%   { transform: translate(-100%, -100%) translate3d(0, 0, 0); }
+  25%  { transform: translate(-100%, -100%) translate3d(100%, 0, 0); }
+  50%  { transform: translate(-100%, -100%) translate3d(100%, 100%, 0); }
+  75%  { transform: translate(-100%, -100%) translate3d(0, 100%, 0); }
+  100% { transform: translate(-100%, -100%) translate3d(0, 0, 0); }
+}
+
 @layer utilities {
   .underline-terra { background-image: linear-gradient(transparent 70%, rgba(204,13,26,0.25) 70%); background-size: 100% 100%; }
   .scrollbar-thin::-webkit-scrollbar { width: 6px; height: 6px; }

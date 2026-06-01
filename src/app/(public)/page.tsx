@@ -3,13 +3,55 @@ import Image from 'next/image';
 import { createClient } from '@/lib/supabase/server';
 import { money } from '@/lib/utils';
 import { ArrowRight, Search, MapPin, Bed, Bath, Car, Maximize2, Award, Shield, Heart, MessageCircle, Mail, Phone } from 'lucide-react';
+import BetoLogo from '@/components/beto-logo';
 
 export const revalidate = 60;
 
+// Mock data for preview when Supabase is empty (will be replaced by real DB data in production)
+const MOCK_FEATURED = [
+  { id: 'mock-1', title: 'Casa Térrea de Alto Padrão', neighborhood: 'Centro', city: 'Capão Bonito', purpose: 'Venda', price: 990000, rent: null, bedrooms: 3, bathrooms: 2, parking: 2, area: 200, is_featured: true, photos: ['https://imonuvem.com.br/imovel/95/5004/casa-venda-centro-cm1328930224.jpg'] },
+  { id: 'mock-2', title: 'Casa com Piscina e Jardim', neighborhood: 'Jd. América', city: 'Capão Bonito', purpose: 'Venda', price: 850000, rent: null, bedrooms: 4, bathrooms: 3, parking: 2, area: 320, is_featured: true, photos: ['https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800'] },
+  { id: 'mock-3', title: 'Apartamento Moderno', neighborhood: 'Centro', city: 'Capão Bonito', purpose: 'Venda', price: 420000, rent: null, bedrooms: 2, bathrooms: 2, parking: 1, area: 95, is_featured: true, photos: ['https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800'] },
+  { id: 'mock-4', title: 'Chácara Completa', neighborhood: 'Zona Rural', city: 'Capão Bonito', purpose: 'Venda', price: 1200000, rent: null, bedrooms: 3, bathrooms: 2, parking: 4, area: 5000, is_featured: true, photos: ['https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800'] },
+  { id: 'mock-5', title: 'Sobrado em Condomínio', neighborhood: 'Jd. Eldorado', city: 'Capão Bonito', purpose: 'Locação', price: null, rent: 3500, bedrooms: 3, bathrooms: 2, parking: 2, area: 180, is_featured: true, photos: ['https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=800'] },
+  { id: 'mock-6', title: 'Terreno em Área Nobre', neighborhood: 'Belvedere', city: 'Capão Bonito', purpose: 'Venda', price: 280000, rent: null, bedrooms: 0, bathrooms: 0, parking: 0, area: 500, is_featured: true, photos: ['https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800'] },
+];
+
+// Short timeout for Supabase calls so preview doesn't hang when DB is unreachable
+async function tryFetch<T>(thenable: PromiseLike<T>, fallback: T, ms = 2000): Promise<T> {
+  try {
+    return await Promise.race<T>([
+      Promise.resolve(thenable),
+      new Promise<T>((_, reject) => setTimeout(() => reject(new Error('timeout')), ms)),
+    ]);
+  } catch {
+    return fallback;
+  }
+}
+
 export default async function HomePage() {
   const supabase = createClient();
-  const { data: featured } = await supabase.from('properties').select('*').eq('is_published', true).eq('is_featured', true).limit(6);
-  const { count: totalProps } = await supabase.from('properties').select('*', { count: 'exact', head: true }).eq('is_published', true);
+  const isPlaceholderEnv = (process.env.NEXT_PUBLIC_SUPABASE_URL || '').includes('placeholder');
+
+  let featuredData: any[] | null = null;
+  let totalProps: number | null = null;
+
+  if (!isPlaceholderEnv) {
+    const featuredRes = await tryFetch<{ data: any[] | null }>(
+      supabase.from('properties').select('*').eq('is_published', true).eq('is_featured', true).limit(6),
+      { data: null }
+    );
+    featuredData = featuredRes?.data ?? null;
+
+    const countRes = await tryFetch<{ count: number | null }>(
+      supabase.from('properties').select('*', { count: 'exact', head: true }).eq('is_published', true),
+      { count: null }
+    );
+    totalProps = countRes?.count ?? null;
+  }
+
+  // Use real data if available, otherwise show mock data for preview
+  const featured = (featuredData && featuredData.length > 0) ? featuredData : MOCK_FEATURED;
 
   return (
     <div className="bg-paper">
@@ -108,8 +150,60 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* DESTAQUES */}
+      {/* DESTAQUE DA SEMANA — featured hero property */}
       {featured && featured.length > 0 && (
+        <section className="py-24 bg-ink text-white relative overflow-hidden">
+          <div className="absolute inset-0 bg-spfc-stripes opacity-[0.04]" />
+          <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-terra/10 blur-[200px] rounded-full pointer-events-none" />
+          <div className="max-w-7xl mx-auto px-6 md:px-8 relative">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-12 h-[2px] bg-terra" />
+              <p className="text-xs tracking-[4px] text-terra uppercase font-semibold">Destaque da semana</p>
+            </div>
+            <h2 className="font-display text-4xl md:text-5xl font-bold mb-12 max-w-2xl">O imóvel da vez.</h2>
+
+            <Link href={`/imoveis/${featured[0].id}`} className="group block bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden hover:border-terra/40 transition-all duration-500">
+              <div className="grid md:grid-cols-2 gap-0">
+                <div className="relative aspect-[4/3] md:aspect-auto overflow-hidden">
+                  {featured[0].photos?.[0] ? (
+                    <Image src={featured[0].photos[0]} alt={featured[0].title} fill className="object-cover transition-transform duration-700 group-hover:scale-105" sizes="(max-width: 768px) 100vw, 50vw" unoptimized />
+                  ) : (
+                    <div className="absolute inset-0 bg-gradient-to-br from-ink-soft to-ink flex items-center justify-center">
+                      <svg viewBox="0 0 40 40" className="w-24 h-24 text-terra/40" fill="currentColor"><path d="M4 22 L20 6 L36 22 L36 36 L26 36 L26 26 L14 26 L14 36 L4 36 Z" /></svg>
+                    </div>
+                  )}
+                  <div className="absolute top-5 left-5">
+                    <span className="inline-flex items-center gap-2 bg-terra text-white text-[11px] font-bold tracking-[2px] px-4 py-2 rounded-full shadow-terra">
+                      <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" /> DESTAQUE
+                    </span>
+                  </div>
+                </div>
+                <div className="p-8 md:p-12 flex flex-col justify-center">
+                  <p className="text-[11px] font-semibold tracking-[3px] text-terra mb-3">{(featured[0].neighborhood || '').toUpperCase()} · {(featured[0].city || 'Capão Bonito').toUpperCase()}</p>
+                  <h3 className="font-display text-3xl md:text-4xl font-bold mb-5 leading-tight">{featured[0].title}</h3>
+                  <div className="flex items-center gap-5 text-sm text-white/60 mb-7">
+                    {featured[0].bedrooms > 0 && <span className="flex items-center gap-1.5"><Bed size={15} /> {featured[0].bedrooms} quartos</span>}
+                    <span className="flex items-center gap-1.5"><Bath size={15} /> {featured[0].bathrooms} banheiros</span>
+                    <span className="flex items-center gap-1.5"><Maximize2 size={15} /> {featured[0].area}m²</span>
+                  </div>
+                  <div className="pt-7 border-t border-white/10 flex items-center justify-between">
+                    <div>
+                      <p className="text-xs text-white/50 mb-1">{featured[0].purpose}</p>
+                      <p className="font-display text-4xl font-bold text-terra">{featured[0].purpose === 'Locação' && featured[0].rent ? `${money(featured[0].rent)}/mês` : money(featured[0].price)}</p>
+                    </div>
+                    <div className="hidden sm:flex items-center gap-2 text-sm text-white/80 group-hover:text-terra transition">
+                      Ver detalhes <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Link>
+          </div>
+        </section>
+      )}
+
+      {/* DESTAQUES GRID */}
+      {featured && featured.length > 1 && (
         <section className="py-24 bg-cream/40 border-y border-border">
           <div className="max-w-7xl mx-auto px-6 md:px-8">
             <div className="flex items-end justify-between mb-12 flex-wrap gap-4">
@@ -122,7 +216,7 @@ export default async function HomePage() {
               </Link>
             </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {featured.map((p: any) => <PropertyCard key={p.id} property={p} />)}
+              {featured.slice(1).map((p: any) => <PropertyCard key={p.id} property={p} />)}
             </div>
           </div>
         </section>
@@ -131,16 +225,24 @@ export default async function HomePage() {
       {/* SOBRE BETO — Shield crest + text */}
       <section className="py-24 bg-paper">
         <div className="max-w-7xl mx-auto px-6 md:px-8">
-          <div className="grid md:grid-cols-[300px_1fr] gap-12 lg:gap-20 items-center">
-            {/* Shield crest */}
-            <div className="mx-auto md:mx-0 relative w-[280px] h-[340px] bg-white border border-border rounded-2xl shadow-card overflow-hidden">
-              <div className="absolute inset-x-0 top-[15%] h-[60px] bg-terra" />
-              <div className="absolute inset-x-0 bottom-[15%] h-[60px] bg-ink" />
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <div className="font-display text-[96px] font-bold text-ink leading-none">BB</div>
-              </div>
-              <div className="absolute inset-x-0 bottom-[15%] h-[60px] flex items-center justify-center">
-                <span className="text-[11px] font-bold tracking-[3px] text-white">CRECI 318284-F</span>
+          <div className="grid md:grid-cols-[360px_1fr] gap-12 lg:gap-20 items-center">
+            {/* Logo card */}
+            <div className="mx-auto md:mx-0 relative w-full max-w-[360px] bg-white border border-border rounded-3xl shadow-card overflow-hidden">
+              {/* Tricolor accent bar at top */}
+              <div className="h-1.5 bg-spfc-tricolor" />
+              <div className="p-10 flex flex-col items-center justify-center min-h-[300px]">
+                <Image
+                  src="/logo-clean.png"
+                  alt="Beto Baltazar — Corretor de Imóveis"
+                  width={400}
+                  height={300}
+                  className="w-full h-auto object-contain"
+                  priority
+                />
+                <div className="mt-6 pt-6 border-t border-border w-full text-center">
+                  <p className="text-[11px] font-bold tracking-[3px] text-terra">CRECI 318284-F</p>
+                  <p className="text-xs text-ink-soft/60 mt-1">Capão Bonito · SP</p>
+                </div>
               </div>
             </div>
 
@@ -162,23 +264,32 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* VALORES */}
-      <section className="py-24 bg-cream/40 border-y border-border">
-        <div className="max-w-7xl mx-auto px-6 md:px-8">
+      {/* VALORES — Glass cards on gradient bg */}
+      <section className="relative py-24 overflow-hidden border-y border-border">
+        {/* Gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-cream via-paper to-cream" />
+        {/* Decorative blurred shapes for glass effect */}
+        <div className="absolute top-10 left-1/4 w-[400px] h-[400px] bg-terra/20 rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-10 right-1/4 w-[400px] h-[400px] bg-ink/10 rounded-full blur-[120px] pointer-events-none" />
+
+        <div className="max-w-7xl mx-auto px-6 md:px-8 relative">
           <div className="text-center mb-14">
             <p className="text-xs tracking-[4px] text-terra uppercase mb-3 font-semibold">Por que nos escolher</p>
             <h2 className="font-display text-4xl md:text-5xl font-bold text-ink">Trabalho com dedicação em cada detalhe.</h2>
           </div>
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-3 gap-8 md:gap-10 justify-items-center">
             {[
-              { icon: <Award className="text-terra" size={28} strokeWidth={1.5} />, title: 'Curadoria pessoal', text: 'Cada imóvel é visitado e avaliado pessoalmente antes de entrar na carteira.' },
-              { icon: <Shield className="text-ink" size={28} strokeWidth={1.5} />, title: 'Transparência total', text: 'Contratos claros, documentação revisada e nenhuma surpresa no caminho.' },
-              { icon: <Heart className="text-terra" size={28} strokeWidth={1.5} />, title: 'Atendimento próximo', text: 'Do primeiro contato à entrega das chaves, você fala diretamente comigo.' },
+              { icon: <Award className="text-terra" size={32} strokeWidth={1.5} />, title: 'Curadoria pessoal', text: 'Cada imóvel é visitado e avaliado pessoalmente antes de entrar na carteira.' },
+              { icon: <Shield className="text-ink" size={32} strokeWidth={1.5} />, title: 'Transparência total', text: 'Contratos claros, documentação revisada e nenhuma surpresa no caminho.' },
+              { icon: <Heart className="text-terra" size={32} strokeWidth={1.5} />, title: 'Atendimento próximo', text: 'Do primeiro contato à entrega das chaves, você fala diretamente comigo.' },
             ].map((item, i) => (
-              <div key={i} className="bg-white border border-border rounded-2xl p-8 hover:shadow-card hover:-translate-y-1 transition-all duration-300">
-                <div className="w-14 h-14 bg-cream rounded-xl flex items-center justify-center mb-5">{item.icon}</div>
-                <h3 className="font-display text-xl font-semibold mb-3 text-ink">{item.title}</h3>
-                <p className="text-sm text-ink-soft/75 leading-relaxed">{item.text}</p>
+              <div key={i} className="blob-card">
+                <div className="blob" style={{ animationDelay: `${i * -2}s` }} />
+                <div className="blob-bg">
+                  <div className="w-14 h-14 bg-white/80 backdrop-blur-md border border-white shadow-soft rounded-2xl flex items-center justify-center mb-5">{item.icon}</div>
+                  <h3 className="font-display text-xl font-bold mb-2 text-ink">{item.title}</h3>
+                  <p className="text-sm text-ink-soft/80 leading-relaxed">{item.text}</p>
+                </div>
               </div>
             ))}
           </div>
