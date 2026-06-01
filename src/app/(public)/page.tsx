@@ -67,7 +67,7 @@ export default async function HomePage() {
       {/* HERO — São Paulo FC inspired with jersey stripes */}
       <section className="relative overflow-hidden bg-paper">
         {/* SPFC diagonal jersey stripes */}
-        <div className="spfc-stripes-bg hidden md:block">
+        <div className="spfc-stripes-bg">
           <div className="spfc-stripe spfc-stripe-red" style={{ left: 0, width: 90 }} />
           <div className="spfc-stripe spfc-stripe-black" style={{ left: 130, width: 60 }} />
           <div className="spfc-stripe spfc-stripe-red" style={{ left: 230, width: 90 }} />
