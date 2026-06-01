@@ -24,7 +24,7 @@ const config: Config = {
         },
       },
       fontFamily: {
-        display: ["Fraunces", "Georgia", "serif"],
+        display: ["Rajdhani", "system-ui", "sans-serif"],
         sans: ["Outfit", "system-ui", "sans-serif"],
       },
       boxShadow: {
