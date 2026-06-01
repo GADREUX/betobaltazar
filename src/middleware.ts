@@ -1,11 +1,19 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
+function setSecurityHeaders(response: NextResponse) {
+  response.headers.set('X-Robots-Tag', 'noindex, nofollow');
+  response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  response.headers.delete('X-Powered-By');
+  return response;
+}
+
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   if (pathname.startsWith('/admin/login')) {
-    return NextResponse.next({ request });
+    const response = NextResponse.next({ request });
+    return setSecurityHeaders(response);
   }
 
   if (!pathname.startsWith('/admin')) {
@@ -38,7 +46,7 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(url);
     }
 
-    return response;
+    return setSecurityHeaders(response);
   } catch {
     const url = request.nextUrl.clone();
     url.pathname = '/admin/login';
