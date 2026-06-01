@@ -54,7 +54,8 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
 
       <main className="flex-1">{children}</main>
 
-      <footer className="bg-ink text-white/80 mt-24">
+      <footer className="bg-ink text-white/80">
+        <div className="spfc-bar" />
         <div className="max-w-7xl mx-auto px-8 py-12">
           <div className="grid md:grid-cols-3 gap-10 mb-10">
             <div>

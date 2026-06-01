@@ -10,9 +10,9 @@
 
 @layer components {
   .btn { @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg font-medium text-sm transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed; }
-  .btn-primary { @apply btn bg-terra text-white hover:bg-terra-dark shadow-soft hover:shadow-card; }
+  .btn-primary { @apply btn bg-terra text-white hover:bg-terra-dark shadow-terra hover:shadow-lift; }
   .btn-secondary { @apply btn bg-ink text-paper hover:bg-ink-soft shadow-soft; }
-  .btn-outline { @apply btn bg-transparent border border-border text-ink hover:bg-cream; }
+  .btn-outline { @apply btn bg-white border border-border text-ink hover:bg-cream; }
   .btn-ghost { @apply btn bg-transparent text-ink-soft hover:bg-cream; }
   .btn-sm { @apply px-3 py-1.5 text-xs; }
   .btn-lg { @apply px-7 py-3.5 text-base; }
@@ -22,14 +22,54 @@
   .card-base { @apply bg-white border border-border rounded-2xl shadow-soft; }
   .card-padded { @apply card-base p-6; }
   .badge { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium; }
+
+  /* SPFC Glass card */
+  .glass {
+    @apply bg-white/70 backdrop-blur-xl border border-white/80 shadow-glass;
+  }
+  .glass-dark {
+    @apply bg-ink/40 backdrop-blur-xl border border-white/10;
+  }
 }
 
 @layer utilities {
-  .underline-terra { background-image: linear-gradient(transparent 70%, rgba(214,43,43,0.25) 70%); background-size: 100% 100%; }
+  .underline-terra { background-image: linear-gradient(transparent 70%, rgba(204,13,26,0.25) 70%); background-size: 100% 100%; }
   .scrollbar-thin::-webkit-scrollbar { width: 6px; height: 6px; }
   .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
-  .scrollbar-thin::-webkit-scrollbar-thumb { background: #E0E0E0; border-radius: 3px; }
-  .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: #D62B2B; }
+  .scrollbar-thin::-webkit-scrollbar-thumb { background: #E0E0DE; border-radius: 3px; }
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: #CC0D1A; }
+
+  /* São Paulo FC jersey stripes — bold diagonals */
+  .spfc-stripes-bg {
+    position: absolute;
+    top: -20%;
+    right: -10%;
+    width: 600px;
+    height: 140%;
+    transform: rotate(-18deg);
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .spfc-stripe {
+    position: absolute;
+    top: 0;
+    height: 100%;
+  }
+  .spfc-stripe-red { background-color: #CC0D1A; opacity: 0.85; }
+  .spfc-stripe-black { background-color: #141414; opacity: 0.85; }
+
+  /* Footer tricolor bar */
+  .spfc-bar {
+    height: 6px;
+    background: linear-gradient(90deg,
+      #CC0D1A 0%, #CC0D1A 33.33%,
+      #FFFFFF 33.33%, #FFFFFF 66.66%,
+      #141414 66.66%, #141414 100%);
+  }
+
+  .clip-diagonal {
+    clip-path: polygon(20% 0, 100% 0, 100% 100%, 0 100%);
+  }
 }
 
 /* Print styles — contrato */
