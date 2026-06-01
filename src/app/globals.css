@@ -114,8 +114,8 @@
     top: 0;
     height: 100%;
   }
-  .spfc-stripe-red { background-color: #CC0D1A; opacity: 0.85; }
-  .spfc-stripe-black { background-color: #141414; opacity: 0.85; }
+  .spfc-stripe-red { background-color: #CC0D1A; opacity: 0.35; }
+  .spfc-stripe-black { background-color: #141414; opacity: 0.35; }
 
   /* Footer tricolor bar */
   .spfc-bar {
