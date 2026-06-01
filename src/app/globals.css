@@ -31,3 +31,11 @@
   .scrollbar-thin::-webkit-scrollbar-thumb { background: #E0E0E0; border-radius: 3px; }
   .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: #D62B2B; }
 }
+
+/* Print styles — contrato */
+@media print {
+  body { background: white !important; }
+  header, nav, aside, footer, .btn, a[href], button { display: none !important; }
+  #contrato-pdf { box-shadow: none !important; border: none !important; padding: 0 !important; }
+  @page { margin: 2cm; }
+}
