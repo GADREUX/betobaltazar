@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
+import { encryptSensitiveFields, SENSITIVE_FIELDS } from '@/lib/crypto';
 import { ArrowLeft, Save, Loader2, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -28,12 +29,13 @@ export default function TenantForm({ initial }: { initial?: any }) {
     if (!form.name.trim()) { toast.error('Nome obrigatório'); return; }
     setLoading(true);
     const supabase = createClient();
+    const encrypted = await encryptSensitiveFields(form, SENSITIVE_FIELDS.tenants);
     if (isEdit) {
-      const { error } = await supabase.from('tenants').update(form).eq('id', initial.id);
+      const { error } = await supabase.from('tenants').update(encrypted).eq('id', initial.id);
       if (error) { toast.error('Erro: ' + error.message); setLoading(false); return; }
       toast.success('Inquilino atualizado!');
     } else {
-      const { error } = await supabase.from('tenants').insert(form);
+      const { error } = await supabase.from('tenants').insert(encrypted);
       if (error) { toast.error('Erro: ' + error.message); setLoading(false); return; }
       toast.success('Inquilino cadastrado!');
     }
