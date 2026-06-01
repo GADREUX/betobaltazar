@@ -3,11 +3,11 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { LayoutDashboard, Building2, Users, FileSignature, Receipt, Target, Globe, ClipboardCheck, BarChart3, Inbox, LogOut, Menu } from 'lucide-react';
+import { LayoutDashboard, Building2, Users, FileSignature, Receipt, Target, Globe, ClipboardCheck, BarChart3, Inbox, LogOut, Menu, Star } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const NAV = [
-  { section: 'Visão Geral', items: [{ href: '/admin', icon: LayoutDashboard, label: 'Dashboard' }, { href: '/admin/submissoes', icon: Inbox, label: 'Solicitações' }] },
+  { section: 'Visão Geral', items: [{ href: '/admin', icon: LayoutDashboard, label: 'Dashboard' }, { href: '/admin/submissoes', icon: Inbox, label: 'Solicitações' }, { href: '/admin/destaque', icon: Star, label: 'Imóvel da Vez' }] },
   { section: 'Cadastros', items: [{ href: '/admin/imoveis', icon: Building2, label: 'Imóveis' }, { href: '/admin/proprietarios', icon: Users, label: 'Proprietários' }, { href: '/admin/inquilinos', icon: Users, label: 'Clientes' }] },
   { section: 'Operação', items: [{ href: '/admin/contratos', icon: FileSignature, label: 'Contratos' }, { href: '/admin/boletos', icon: Receipt, label: 'Boletos PIX' }, { href: '/admin/vistorias', icon: ClipboardCheck, label: 'Vistorias' }] },
   { section: 'Comercial', items: [{ href: '/admin/crm', icon: Target, label: 'CRM / Funil' }, { href: '/admin/portais', icon: Globe, label: 'Portais' }, { href: '/admin/relatorios', icon: BarChart3, label: 'Relatórios' }] },

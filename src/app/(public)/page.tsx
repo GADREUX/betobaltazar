@@ -33,25 +33,34 @@ export default async function HomePage() {
   const supabase = createClient();
   const isPlaceholderEnv = (process.env.NEXT_PUBLIC_SUPABASE_URL || '').includes('placeholder');
 
-  let featuredData: any[] | null = null;
+  let spotlightData: any | null = null;
+  let gridData: any[] | null = null;
   let totalProps: number | null = null;
 
   if (!isPlaceholderEnv) {
-    const featuredRes = await tryFetch<{ data: any[] | null }>(
-      supabase.from('properties').select('*').eq('is_published', true).eq('is_featured', true).limit(6),
-      { data: null }
-    );
-    featuredData = featuredRes?.data ?? null;
-
-    const countRes = await tryFetch<{ count: number | null }>(
-      supabase.from('properties').select('*', { count: 'exact', head: true }).eq('is_published', true),
-      { count: null }
-    );
+    const [spotlightRes, gridRes, countRes] = await Promise.all([
+      tryFetch<{ data: any | null }>(
+        supabase.from('properties').select('*').eq('is_published', true).eq('is_featured', true).limit(1).single(),
+        { data: null }
+      ),
+      tryFetch<{ data: any[] | null }>(
+        supabase.from('properties').select('*').eq('is_published', true).order('created_at', { ascending: false }).limit(7),
+        { data: null }
+      ),
+      tryFetch<{ count: number | null }>(
+        supabase.from('properties').select('*', { count: 'exact', head: true }).eq('is_published', true),
+        { count: null }
+      ),
+    ]);
+    spotlightData = spotlightRes?.data ?? null;
+    gridData = gridRes?.data ?? null;
     totalProps = countRes?.count ?? null;
   }
 
-  // Use real data if available, otherwise show mock data for preview
-  const featured = (featuredData && featuredData.length > 0) ? featuredData : MOCK_FEATURED;
+  const spotlight = spotlightData || MOCK_FEATURED[0];
+  const gridProperties = (gridData && gridData.length > 0)
+    ? gridData.filter((p: any) => p.id !== spotlight?.id).slice(0, 6)
+    : MOCK_FEATURED.slice(1);
 
   return (
     <div className="bg-paper">
@@ -90,42 +99,40 @@ export default async function HomePage() {
               </div>
             </div>
 
-            {/* RIGHT — Featured property card */}
-            <div className="hidden lg:flex items-center justify-center relative z-10">
-              <div className="relative w-full max-w-md">
-                <div className="bg-white rounded-3xl overflow-hidden shadow-lift border border-border">
-                  <div className="relative aspect-[4/3] overflow-hidden">
-                    <Image
-                      src="https://imonuvem.com.br/imovel/95/5004/casa-venda-centro-cm1328930224.jpg"
-                      alt="Casa Térrea de Alto Padrão no Centro — Capão Bonito"
-                      fill
-                      className="object-cover"
-                      sizes="500px"
-                      unoptimized
-                      priority
-                    />
-                    <div className="absolute top-4 left-4">
-                      <span className="inline-flex items-center gap-1.5 bg-terra text-white text-[10px] font-bold tracking-[2px] px-3 py-1.5 rounded-full">
-                        <div className="w-1.5 h-1.5 bg-white rounded-full" /> DESTAQUE
-                      </span>
+            {/* RIGHT — Featured property card (dynamic) */}
+            {spotlight && (
+              <div className="hidden lg:flex items-center justify-center relative z-10">
+                <Link href={`/imoveis/${spotlight.id}`} className="group relative w-full max-w-md">
+                  <div className="bg-white rounded-3xl overflow-hidden shadow-lift border border-border group-hover:shadow-card transition-shadow">
+                    <div className="relative aspect-[4/3] overflow-hidden">
+                      {spotlight.photos?.[0] ? (
+                        <Image src={spotlight.photos[0]} alt={spotlight.title} fill className="object-cover transition-transform duration-500 group-hover:scale-105" sizes="500px" unoptimized priority />
+                      ) : (
+                        <div className="absolute inset-0 bg-cream flex items-center justify-center"><svg viewBox="0 0 40 40" className="w-16 h-16 text-terra/30" fill="currentColor"><path d="M4 22 L20 6 L36 22 L36 36 L26 36 L26 26 L14 26 L14 36 L4 36 Z" /></svg></div>
+                      )}
+                      <div className="absolute top-4 left-4">
+                        <span className="inline-flex items-center gap-1.5 bg-terra text-white text-[10px] font-bold tracking-[2px] px-3 py-1.5 rounded-full">
+                          <div className="w-1.5 h-1.5 bg-white rounded-full" /> DESTAQUE
+                        </span>
+                      </div>
+                    </div>
+                    <div className="p-6">
+                      <p className="text-[11px] font-semibold tracking-[2px] text-terra mb-2">{(spotlight.neighborhood || '').toUpperCase()} · {(spotlight.city || 'CAPÃO BONITO').toUpperCase()}</p>
+                      <h3 className="font-display text-2xl font-bold text-ink mb-3">{spotlight.title}</h3>
+                      <div className="flex items-center gap-4 text-sm text-ink-soft/70 mb-4">
+                        {spotlight.bedrooms > 0 && <span className="flex items-center gap-1"><Bed size={14} /> {spotlight.bedrooms}</span>}
+                        {spotlight.bathrooms > 0 && <span className="flex items-center gap-1"><Bath size={14} /> {spotlight.bathrooms}</span>}
+                        {spotlight.area > 0 && <span className="flex items-center gap-1"><Maximize2 size={14} /> {spotlight.area}m²</span>}
+                      </div>
+                      <div className="flex items-center justify-between pt-4 border-t border-border">
+                        <span className="text-sm text-ink-soft/70 font-medium">{spotlight.purpose}</span>
+                        <span className="font-display text-3xl font-bold text-terra">{spotlight.purpose === 'Locação' && spotlight.rent ? money(spotlight.rent) : money(spotlight.price)}</span>
+                      </div>
                     </div>
                   </div>
-                  <div className="p-6">
-                    <p className="text-[11px] font-semibold tracking-[2px] text-terra mb-2">CENTRO · CAPÃO BONITO</p>
-                    <h3 className="font-display text-2xl font-bold text-ink mb-3">Casa Térrea de Alto Padrão</h3>
-                    <div className="flex items-center gap-4 text-sm text-ink-soft/70 mb-4">
-                      <span className="flex items-center gap-1"><Bed size={14} /> 3</span>
-                      <span className="flex items-center gap-1"><Bath size={14} /> 2</span>
-                      <span className="flex items-center gap-1"><Maximize2 size={14} /> 200m²</span>
-                    </div>
-                    <div className="flex items-center justify-between pt-4 border-t border-border">
-                      <span className="text-sm text-ink-soft/70 font-medium">Venda</span>
-                      <span className="font-display text-3xl font-bold text-terra">R$ 990.000</span>
-                    </div>
-                  </div>
-                </div>
+                </Link>
               </div>
-            </div>
+            )}
           </div>
 
           {/* Stats bar — solid white card */}
@@ -151,7 +158,7 @@ export default async function HomePage() {
       </section>
 
       {/* DESTAQUE DA SEMANA — featured hero property */}
-      {featured && featured.length > 0 && (
+      {spotlight && (
         <section className="py-24 bg-ink text-white relative overflow-hidden">
           <div className="absolute inset-0 bg-spfc-stripes opacity-[0.04]" />
           <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-terra/10 blur-[200px] rounded-full pointer-events-none" />
@@ -162,11 +169,11 @@ export default async function HomePage() {
             </div>
             <h2 className="font-display text-4xl md:text-5xl font-bold mb-12 max-w-2xl">O imóvel da vez.</h2>
 
-            <Link href={`/imoveis/${featured[0].id}`} className="group block bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden hover:border-terra/40 transition-all duration-500">
+            <Link href={`/imoveis/${spotlight.id}`} className="group block bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden hover:border-terra/40 transition-all duration-500">
               <div className="grid md:grid-cols-2 gap-0">
                 <div className="relative aspect-[4/3] md:aspect-auto overflow-hidden">
-                  {featured[0].photos?.[0] ? (
-                    <Image src={featured[0].photos[0]} alt={featured[0].title} fill className="object-cover transition-transform duration-700 group-hover:scale-105" sizes="(max-width: 768px) 100vw, 50vw" unoptimized />
+                  {spotlight.photos?.[0] ? (
+                    <Image src={spotlight.photos[0]} alt={spotlight.title} fill className="object-cover transition-transform duration-700 group-hover:scale-105" sizes="(max-width: 768px) 100vw, 50vw" unoptimized />
                   ) : (
                     <div className="absolute inset-0 bg-gradient-to-br from-ink-soft to-ink flex items-center justify-center">
                       <svg viewBox="0 0 40 40" className="w-24 h-24 text-terra/40" fill="currentColor"><path d="M4 22 L20 6 L36 22 L36 36 L26 36 L26 26 L14 26 L14 36 L4 36 Z" /></svg>
@@ -179,17 +186,17 @@ export default async function HomePage() {
                   </div>
                 </div>
                 <div className="p-8 md:p-12 flex flex-col justify-center">
-                  <p className="text-[11px] font-semibold tracking-[3px] text-terra mb-3">{(featured[0].neighborhood || '').toUpperCase()} · {(featured[0].city || 'Capão Bonito').toUpperCase()}</p>
-                  <h3 className="font-display text-3xl md:text-4xl font-bold mb-5 leading-tight">{featured[0].title}</h3>
-                  <div className="flex items-center gap-5 text-sm text-white/60 mb-7">
-                    {featured[0].bedrooms > 0 && <span className="flex items-center gap-1.5"><Bed size={15} /> {featured[0].bedrooms} quartos</span>}
-                    <span className="flex items-center gap-1.5"><Bath size={15} /> {featured[0].bathrooms} banheiros</span>
-                    <span className="flex items-center gap-1.5"><Maximize2 size={15} /> {featured[0].area}m²</span>
+                  <p className="text-[11px] font-semibold tracking-[3px] text-terra mb-3">{(spotlight.neighborhood || '').toUpperCase()} · {(spotlight.city || 'Capão Bonito').toUpperCase()}</p>
+                  <h3 className="font-display text-3xl md:text-4xl font-bold mb-5 leading-tight">{spotlight.title}</h3>
+                  <div className="flex flex-wrap items-center gap-5 text-sm text-white/60 mb-7">
+                    {spotlight.bedrooms > 0 && <span className="flex items-center gap-1.5"><Bed size={15} /> {spotlight.bedrooms} quartos</span>}
+                    {spotlight.bathrooms > 0 && <span className="flex items-center gap-1.5"><Bath size={15} /> {spotlight.bathrooms} banheiros</span>}
+                    {spotlight.area > 0 && <span className="flex items-center gap-1.5"><Maximize2 size={15} /> {spotlight.area}m²</span>}
                   </div>
                   <div className="pt-7 border-t border-white/10 flex items-center justify-between">
                     <div>
-                      <p className="text-xs text-white/50 mb-1">{featured[0].purpose}</p>
-                      <p className="font-display text-4xl font-bold text-terra">{featured[0].purpose === 'Locação' && featured[0].rent ? `${money(featured[0].rent)}/mês` : money(featured[0].price)}</p>
+                      <p className="text-xs text-white/50 mb-1">{spotlight.purpose}</p>
+                      <p className="font-display text-4xl font-bold text-terra">{spotlight.purpose === 'Locação' && spotlight.rent ? `${money(spotlight.rent)}/mês` : money(spotlight.price)}</p>
                     </div>
                     <div className="hidden sm:flex items-center gap-2 text-sm text-white/80 group-hover:text-terra transition">
                       Ver detalhes <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
@@ -203,7 +210,7 @@ export default async function HomePage() {
       )}
 
       {/* DESTAQUES GRID */}
-      {featured && featured.length > 1 && (
+      {gridProperties && gridProperties.length > 0 && (
         <section className="py-24 bg-cream/40 border-y border-border">
           <div className="max-w-7xl mx-auto px-6 md:px-8">
             <div className="flex items-end justify-between mb-12 flex-wrap gap-4">
@@ -216,7 +223,7 @@ export default async function HomePage() {
               </Link>
             </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {featured.slice(1).map((p: any) => <PropertyCard key={p.id} property={p} />)}
+              {gridProperties.map((p: any) => <PropertyCard key={p.id} property={p} />)}
             </div>
           </div>
         </section>
