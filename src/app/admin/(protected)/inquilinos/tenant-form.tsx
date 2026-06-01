@@ -33,11 +33,11 @@ export default function TenantForm({ initial }: { initial?: any }) {
     if (isEdit) {
       const { error } = await supabase.from('tenants').update(encrypted).eq('id', initial.id);
       if (error) { toast.error('Erro: ' + error.message); setLoading(false); return; }
-      toast.success('Inquilino atualizado!');
+      toast.success('Cliente atualizado!');
     } else {
       const { error } = await supabase.from('tenants').insert(encrypted);
       if (error) { toast.error('Erro: ' + error.message); setLoading(false); return; }
-      toast.success('Inquilino cadastrado!');
+      toast.success('Cliente cadastrado!');
     }
     router.push('/admin/inquilinos');
     router.refresh();
@@ -76,7 +76,7 @@ export default function TenantForm({ initial }: { initial?: any }) {
         <div className="grid sm:grid-cols-2 gap-4">
           <div className="sm:col-span-2">
             <label className="field-label">Nome completo *</label>
-            <input className="field-input" value={form.name} onChange={e => u('name', e.target.value)} required placeholder="Nome do inquilino" />
+            <input className="field-input" value={form.name} onChange={e => u('name', e.target.value)} required placeholder="Nome do cliente" />
           </div>
           <div>
             <label className="field-label">CPF</label>
@@ -120,7 +120,7 @@ export default function TenantForm({ initial }: { initial?: any }) {
           rows={3}
           value={form.notes}
           onChange={e => u('notes', e.target.value)}
-          placeholder="Anotações internas sobre este inquilino..."
+          placeholder="Anotações internas sobre este cliente..."
         />
       </div>
 
