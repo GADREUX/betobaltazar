@@ -19,14 +19,14 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
       </div>
 
       <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-border shadow-soft">
-        <div className="max-w-7xl mx-auto px-6 md:px-8 h-[88px] flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-6 md:px-8 h-[68px] flex items-center justify-between">
           <Link href="/" className="flex items-center">
             <Image
               src="/logo-clean.png"
               alt="Beto Baltazar — Corretor de Imóveis"
               width={640}
               height={200}
-              className="h-16 md:h-[72px] w-auto object-contain"
+              className="h-11 md:h-12 w-auto object-contain"
               priority
             />
           </Link>
