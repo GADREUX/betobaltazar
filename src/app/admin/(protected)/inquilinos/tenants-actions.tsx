@@ -12,7 +12,7 @@ export default function TenantsActions({ id, name }: { id: string; name: string 
     const supabase = createClient();
     const { error } = await supabase.from('tenants').delete().eq('id', id);
     if (error) { toast.error('Erro ao excluir: ' + error.message); return; }
-    toast.success('Inquilino excluído');
+      toast.success('Cliente excluído');
     router.refresh();
   }
 

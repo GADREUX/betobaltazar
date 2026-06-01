@@ -18,19 +18,19 @@ export default async function InquilinosPage() {
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
           <p className="text-xs tracking-widest text-terra uppercase font-semibold mb-1">Cadastros</p>
-          <h2 className="font-display text-2xl font-bold text-ink">Inquilinos</h2>
-          <p className="text-sm text-ink-soft/60 mt-0.5">{tenants?.length || 0} inquilino(s) cadastrado(s)</p>
+          <h2 className="font-display text-2xl font-bold text-ink">Clientes</h2>
+          <p className="text-sm text-ink-soft/60 mt-0.5">{tenants?.length || 0} cliente(s) cadastrado(s)</p>
         </div>
         <Link href="/admin/inquilinos/novo" className="btn-primary">
-          <Plus size={16} /> Novo Inquilino
+          <Plus size={16} /> Novo Cliente
         </Link>
       </div>
 
       {!tenants?.length ? (
         <div className="card-base p-16 text-center">
           <Users size={40} className="text-ink-soft/30 mx-auto mb-3" />
-          <h3 className="font-display text-lg font-semibold text-ink mb-1">Nenhum inquilino</h3>
-          <p className="text-sm text-ink-soft/60 mb-6">Cadastre os inquilinos dos imóveis em locação.</p>
+          <h3 className="font-display text-lg font-semibold text-ink mb-1">Nenhum cliente</h3>
+          <p className="text-sm text-ink-soft/60 mb-6">Cadastre clientes e compradores interessados.</p>
           <Link href="/admin/inquilinos/novo" className="btn-primary"><Plus size={16} /> Cadastrar primeiro</Link>
         </div>
       ) : (
